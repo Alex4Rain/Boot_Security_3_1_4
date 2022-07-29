@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 @Controller
@@ -12,15 +13,17 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 public class AdminController {
 
     private final UserService service;
+    private final RoleService roleService;
 
     @Autowired
-    public AdminController(UserService service) {
+    public AdminController(UserService service, RoleService roleService) {
         this.service = service;
+        this.roleService = roleService;
     }
 
     @GetMapping
     public String index(ModelMap model) {
-        model.addAttribute("users", service.listUsers());
+        model.addAttribute("users", service.setUsers());
         model.addAttribute("user", new User());
         return "admin";
     }

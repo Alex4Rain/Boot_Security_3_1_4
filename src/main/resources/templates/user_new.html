@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="https://getbootstrap.com/docs/4.0/assets/img/favicons/favicon.ico">
+
+  <title>User page</title>
+
+  <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/dashboard/">
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="https://getbootstrap.com/docs/4.0/examples/dashboard/dashboard.css" rel="stylesheet">
+</head>
+
+<body>
+<nav class="navbar navbar-dark sticky-top bg-dark d-flex justify-content-between p-0">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1 navbar-dark bg-dark fs-2" style="font-size:18.0pt" th:text="|${user.email} with roles: ${user.printAuthoritiesToString()}|">User@mail.com with roles: USER</span>
+    <form class="d-flex" action="/auth/logout" method = "POST">
+      <button class="btn btn-outline-success" type="submit">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+      <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+          <li class="nav-item pt-4">
+            <a class="btn btn-lg btn-primary btn-block text-left" href="/user">User</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+      </div>
+      <h1>User information-page</h1>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-light">
+          <tr>
+            <th style="font-size:18.0pt">About user</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>
+              <h1></h1>
+              <table class="table table-striped">
+                <thead>
+                <tr>
+                  <th style="font-size:14.0pt">ID</th>
+                  <th style="font-size:14.0pt">Name</th>
+                  <th style="font-size:14.0pt">Last Name</th>
+                  <th style="font-size:14.0pt">E-mail</th>
+                  <th style="font-size:14.0pt">Password</th>
+                  <th style="font-size:14.0pt">Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td th:text = "${user.id}">1</td>
+                  <td th:text = "${user.firstName}">Alex</td>
+                  <td th:text = "${user.lastName}">Rain</td>
+                  <td th:text = "${user.email}">alex@mail.com</td>
+                  <td th:text = "${user.password}">alex</td>
+                  <td th:text = "${user.printAuthoritiesToString()}">USER</td>
+                </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+<script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/popper.min.js"></script>
+<script src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"></script>
+
+<!-- Icons -->
+<script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+<script>
+      feather.replace()
+    </script>
+
+<!-- Graphs -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.1/dist/Chart.min.js"></script>
+<script>
+      var ctx = document.getElementById("myChart");
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+          datasets: [{
+            data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
+            lineTension: 0,
+            backgroundColor: 'transparent',
+            borderColor: '#007bff',
+            borderWidth: 4,
+            pointBackgroundColor: '#007bff'
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: false
+              }
+            }]
+          },
+          legend: {
+            display: false,
+          }
+        }
+      });
+    </script>
+</body>
+

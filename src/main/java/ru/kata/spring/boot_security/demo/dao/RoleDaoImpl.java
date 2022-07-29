@@ -8,7 +8,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class RoleDaoImpl implements RoleDao {
@@ -31,9 +32,9 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public List<Role> listRoles() {
+    public Set <Role> setRoles() {
         TypedQuery<Role> query = entityManager.createQuery("FROM Role", Role.class);
-        return query.getResultList();
+        return query.getResultStream().collect(Collectors.toSet());
     }
     @Override
     public Role getRole(Long id) {

@@ -8,7 +8,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserDaoImpl implements UserDao {
@@ -36,9 +37,9 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> listUsers() {
+    public Set <User> setUsers() {
         TypedQuery<User> query = entityManager.createQuery("FROM User", User.class);
-        return query.getResultList();
+        return query.getResultStream().collect(Collectors.toSet());
     }
 
     @Override

@@ -4,8 +4,8 @@ import com.sun.istack.NotNull;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,7 +30,7 @@ public class User implements UserDetails {
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-    private List<Role> authorities;
+    private Set <Role> authorities;
 
     public User (String firstName) {
         this.firstName = firstName;
@@ -43,7 +43,7 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public User(Long id, String firstName, String lastName, String email, String password, List<Role> authorities) {
+    public User(Long id, String firstName, String lastName, String email, String password, Set <Role> authorities) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -91,13 +91,13 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public void setAuthorities(List<Role> authorities) {
+    public void setAuthorities(Set <Role> authorities) {
         this.authorities = authorities;
     }
 
     public void addAuthority(Role role) {
         if (authorities == null) {
-            authorities = new ArrayList<>();
+            authorities = new HashSet<>();
         }
         authorities.add(role);
     }
@@ -105,18 +105,19 @@ public class User implements UserDetails {
     public String printAuthoritiesToString() {
         StringBuilder roles = new StringBuilder();
         if (authorities == null) {
-            authorities = new ArrayList<>();
+            authorities = new HashSet<>();
         }
         for (Role role : authorities) {
-            roles.append(role.getName())
+            roles.append(role.getName().replaceAll("ROLE_",""))
                     .append("; ");
 
         }
+        roles.setLength(roles.length() - 2);
         return roles.toString();
     }
 
     @Override
-    public List<Role> getAuthorities() {
+    public Set <Role> getAuthorities() {
         return authorities;
     }
 
@@ -159,9 +160,9 @@ public class User implements UserDetails {
     }
 
     public void setAuthoritiesByName(@NotNull String names) {
-        List <String> rolesName = Stream.of(names.split("\\s+|,|;"))
+        Set <String> rolesName = Stream.of(names.split("\\s+|,|;"))
                 .map(String::trim)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         for (String name : rolesName) {
             if (!name.equals("")) {
                 this.addAuthority(new Role(name));
