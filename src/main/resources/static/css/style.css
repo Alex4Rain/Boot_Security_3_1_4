@@ -1,0 +1,25 @@
+body {
+    font-size: 1.2rem;
+}
+h4 {
+    padding: 10px 10px 10px 15px;
+}
+
+form.userCust {
+    text-align: center;
+    font-weight:bold;
+}
+
+button.btn-white {
+    color: white;
+}
+
+span.font-bold {
+    font-weight:bold;
+}
+
+div.not-display-cont {
+    display: none;
+}
+
+

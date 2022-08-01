@@ -27,6 +27,6 @@ public class UserController {
     @GetMapping()
     public String view(ModelMap model, Principal principal) {
         model.addAttribute("user", service.getUserByEmail(principal.getName()));
-        return "user";
+        return "user_new";
     }
 }

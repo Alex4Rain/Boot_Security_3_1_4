@@ -4,6 +4,7 @@ import com.sun.istack.NotNull;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,6 +24,9 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "age")
+    private int age;
+
     @Column(unique = true, name = "email")
     private String email;
 
@@ -36,17 +40,19 @@ public class User implements UserDetails {
         this.firstName = firstName;
     }
 
-    public User(String firstName, String lastName, String email, String password) {
+    public User(String firstName, String lastName, String email, int age, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.age = age;
         this.email = email;
         this.password = password;
     }
 
-    public User(Long id, String firstName, String lastName, String email, String password, Set <Role> authorities) {
+    public User(Long id, String firstName, String lastName, String email, int age, String password, Set <Role> authorities) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.age = age;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
@@ -77,6 +83,14 @@ public class User implements UserDetails {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public String getEmail() {
@@ -168,5 +182,13 @@ public class User implements UserDetails {
                 this.addAuthority(new Role(name));
             }
         }
+    }
+
+    class userComparator implements Comparator <User> {
+        @Override
+        public int compare(User u1, User u2) {
+            return u1.getId().compareTo(u2.getId());
+        }
+
     }
 }

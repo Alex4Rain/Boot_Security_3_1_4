@@ -1,8 +1,6 @@
 package ru.kata.spring.boot_security.demo.services;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.kata.spring.boot_security.demo.model.User;
-
 import java.util.Set;
 
 public interface UserService {
@@ -12,5 +10,4 @@ public interface UserService {
     void editUser(User user);
     User getUser(Long id);
     User getUserByEmail (String email);
-    PasswordEncoder getPasswordEncoder();
 }
