@@ -26,5 +26,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
         if (user == null)
             throw new UsernameNotFoundException("User doesn't exist");
         return user.fromUser();
+
     }
 }
