@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,10 +34,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .antMatchers("/").permitAll()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).authenticated()
+                .antMatchers("/").authenticated()
+                .antMatchers(HttpMethod.GET,"/rest", "/index").authenticated()
+                .antMatchers(HttpMethod.POST,"/rest", "/index").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH,"/rest", "/index").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/rest", "/index").hasRole("ADMIN")
+                .antMatchers("/auth/logout").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -70,4 +74,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected PasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
+
 }

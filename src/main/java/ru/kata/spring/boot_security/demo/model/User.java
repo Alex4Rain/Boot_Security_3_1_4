@@ -2,9 +2,7 @@ package ru.kata.spring.boot_security.demo.model;
 
 import com.sun.istack.NotNull;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -174,6 +172,9 @@ public class User implements UserDetails {
     }
 
     public void setAuthoritiesByName(@NotNull String names) {
+        if (authorities != null) {
+            authorities.clear();
+        }
         Set <String> rolesName = Stream.of(names.split("\\s+|,|;"))
                 .map(String::trim)
                 .collect(Collectors.toSet());
@@ -184,11 +185,14 @@ public class User implements UserDetails {
         }
     }
 
-    class userComparator implements Comparator <User> {
-        @Override
-        public int compare(User u1, User u2) {
-            return u1.getId().compareTo(u2.getId());
+    public void addAuthoritiesByName(@NotNull String names) {
+        Set <String> rolesName = Stream.of(names.split("\\s+|,|;"))
+                .map(String::trim)
+                .collect(Collectors.toSet());
+        for (String name : rolesName) {
+            if (!name.equals("")) {
+                this.addAuthority(new Role(name));
+            }
         }
-
     }
 }

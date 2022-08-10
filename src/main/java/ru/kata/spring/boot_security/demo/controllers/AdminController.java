@@ -1,69 +1,76 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.model.UserResponse;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
-
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
-@Controller
-@RequestMapping("/admin")
+@CrossOrigin(origins = "*")
+@RestController
+@RequestMapping("/rest")
 public class AdminController {
 
     private final UserService service;
     private final RoleService roleService;
-    private final Set<Role> defaultRoles;
+    private UserResponse userResponse;
 
     @Autowired
-    public AdminController(UserService service, RoleService roleService) {
+    public AdminController(UserService service, RoleService roleService, UserResponse userResponse) {
         this.service = service;
         this.roleService = roleService;
-        defaultRoles = new HashSet<>();
-        defaultRoles.add(new Role("user"));
-        defaultRoles.add(new Role("admin"));
-        defaultRoles.add(new Role("root"));
-        defaultRoles.add(new Role("superuser"));
-        defaultRoles.addAll(roleService.setRoles());
+        this.userResponse = userResponse;
     }
 
     @GetMapping
-    public String index(ModelMap model, Principal user) {
-        model.addAttribute("allUsers", service.setUsers());
-        model.addAttribute("newUser", new User());
-        model.addAttribute("thisUser", service.getUserByEmail(user.getName()));
-        model.addAttribute("rolesSet", defaultRoles);
-        return "admin_new";
+    public UserResponse index(Principal principal) {
+        userResponse.clear();
+        User loggedUser = service.getUserByEmail(principal.getName());
+        userResponse.setLoggedUser(loggedUser);
+        if (loggedUser.printAuthoritiesToString().contains("ADMIN")) {
+            userResponse.setUsersFromDb(service.setUsers());
+            userResponse.addRolesToSet(roleService.setRoles());
+        } else {
+            userResponse.clearRoles();
+        }
+        return userResponse;
     }
 
-    @PostMapping("/add")
-    public String addUser(User user, @RequestParam(value = "roles") String roles) {
-        user.setAuthoritiesByName(roles);
-        service.addUser(user);
-        return "redirect:/admin/";
+    @PostMapping
+    public UserResponse addUser(@RequestBody Map <String, String> userNew) {
+        User newUser = new User(userNew.get("firstName"), userNew.get("lastName"), userNew.get("email"), Integer.parseInt(userNew.get("age")), userNew.get("password"));
+        newUser.setAuthoritiesByName(userNew.get("roles"));
+        service.addUser(newUser);
+        userResponse.setUsersFromDb(service.setUsers());
+        return userResponse;
     }
 
-    @DeleteMapping("/remove")
-    public String remove(User user) {
-        service.removeUser(user);
-        return "redirect:/admin/";
+    @DeleteMapping
+    public UserResponse remove(@RequestBody Map <String, String> userDel) {
+        User deleteUser = service.getUserByEmail(userDel.get("email"));
+        if (deleteUser != null) {
+            service.removeUser(deleteUser);
+        }
+        userResponse.setUsersFromDb(service.setUsers());
+        return userResponse;
     }
 
-    @PatchMapping("/edit")
-    public String update(@ModelAttribute("user") User user, @RequestParam(value = "editRoles") String editRoles) {
-        user.setAuthoritiesByName(editRoles);
-        service.editUser(user);
-        return "redirect:/admin/";
-    }
-    @GetMapping("/user/{id}")
-    public String view(ModelMap model, @PathVariable("id") long id) {
-        model.addAttribute("user", service.getUser(id));
-        return "user_new";
+    @PatchMapping
+    public UserResponse update(@RequestBody Map <String, String> updatedUser) {
+        User upUser = service.getUser(Long.parseLong(updatedUser.get("id")));
+        if (upUser != null) {
+            upUser.setFirstName(updatedUser.get("firstName"));
+            upUser.setLastName(updatedUser.get("lastName"));
+            upUser.setAge(Integer.parseInt(updatedUser.get("age")));
+            upUser.setEmail(updatedUser.get("email"));
+            upUser.setPassword(updatedUser.get("password"));
+            upUser.setAuthoritiesByName(updatedUser.get("roles"));
+            service.editUser(upUser);
+        }
+        userResponse.setUsersFromDb(service.setUsers());
+        return userResponse;
     }
 }

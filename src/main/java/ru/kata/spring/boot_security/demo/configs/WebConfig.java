@@ -7,6 +7,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("login_new");
+        registry.addViewController("/").setViewName("login_new.html");
+        registry.addViewController("/index").setViewName("index.html");
     }
 }
+
