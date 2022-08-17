@@ -53,6 +53,9 @@ public class Controller {
 
     @PostMapping("/admin/user")
     public List <User> addUser(@RequestBody User newUser) {
+        if (newUser.getAuthorities().isEmpty()) {
+            newUser.setAuthoritiesByName("USER");
+        }
         service.addUser(newUser);
         return getAllUsers();
     }
@@ -65,6 +68,9 @@ public class Controller {
 
     @PatchMapping("/admin/user")
     public List <User> update(@RequestBody User updatedUser) {
+        if (updatedUser.getAuthorities().isEmpty()) {
+            updatedUser.setAuthoritiesByName("USER");
+        }
             service.editUser(updatedUser);
         return getAllUsers();
     }

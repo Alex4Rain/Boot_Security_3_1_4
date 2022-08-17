@@ -262,10 +262,13 @@ function putValueInBody(userBody, ident) {
     userBody.password = document.getElementById(ident + "_password").value;
     document.getElementById(ident + "_password").value = "";
     userBody.username = userBody.email;
+    userBody.id = null;
+
     if (ident !== "newUser") {
         userBody.id = document.getElementById(ident + "_id").value;
         document.getElementById(ident + "_id").value = "";
     }
+
     if (ident === "deleteUser") {
         rolesArray = rolesStringToSet(document.getElementById(ident + "_id").value);
     } else {
@@ -323,7 +326,6 @@ function clearValuesInBody(userBody) {
 
 function submitNewUser() {
     putValueInBody(userBody, "newUser");
-//    console.log(userBody);
     sendRequest("POST", requestURL[3], userBody)
         .then(data => createTableFromResponse(data, getUsersFromResponse, tableColumnsNameExtension, "usersFromDb"))
         .then(data => document.getElementById("userTableSwitch").click())
@@ -385,5 +387,6 @@ sendRequest("GET",requestURL[2])
     .then(data => putRolesInSelect(data, "newUser"))
     .then(data => putRolesInSelect(data, "editUser"))
     .catch(err => console.log(err));
+
 
 doSubmitForm();
