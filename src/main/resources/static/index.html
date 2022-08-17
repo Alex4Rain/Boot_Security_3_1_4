@@ -61,39 +61,6 @@
               <h4>All users</h4>
               <div class="container-fluid border bg-white py-1 px-3">
                 <div id="usersFromDb"></div>
-                <!--                <table class="table table-hover">-->
-                <!--                  <thead>-->
-                <!--                  <tr>-->
-                <!--                    <th>ID</th>-->
-                <!--                    <th>Name</th>-->
-                <!--                    <th>Last Name</th>-->
-                <!--                    <th>Age</th>-->
-                <!--                    <th>E-mail</th>-->
-                <!--                    <th>Password</th>-->
-                <!--                    <th>Role</th>-->
-                <!--                    <th>Edit</th>-->
-                <!--                    <th>Delete</th>-->
-                <!--                  </tr>-->
-                <!--                  </thead>-->
-                <!--                  <tbody>-->
-                <!--                  <tr th:each = "user : ${allUsers}">-->
-                <!--                    <td th:text = "${user.id}">1</td>-->
-                <!--                    <td th:text = "${user.firstName}">User</td>-->
-                <!--                    <td th:text = "${user.lastName}">Lastname</td>-->
-                <!--                    <td th:text = "${user.age}">99</td>-->
-                <!--                    <td th:text = "${user.email}">user@mail.com</td>-->
-                <!--                    <td th:text = "${user.password}">user</td>-->
-                <!--                    <td th:text = "${user.printAuthoritiesToString()}">USER</td>-->
-                <!--                    <td>-->
-                <!--                      <button type="button" class="btn btn-info btn-white" data-toggle="modal" th:data-target="${'#edit' + user.id}">Edit</button>-->
-                <!--                    </td>-->
-                <!--                    <td>-->
-                <!--                      <button type="button" class="btn btn-danger btn-white" data-toggle="modal" th:data-target="${'#remove' + user.id}">Delete</button>-->
-                <!--                    </td>-->
-                <!--                    -->
-                <!--                  </tr>-->
-                <!--                  </tbody>-->
-                <!--                </table>-->
 
                 <!--Modal component for edit user-->
 
@@ -266,30 +233,6 @@
             </div>
             <div class="container-fluid border bg-white py-1 px-3">
               <div id="loggedUser"></div>
-              <!--              <table class="table table-hover">-->
-              <!--                <thead>-->
-              <!--                <tr>-->
-              <!--                  <th>ID</th>-->
-              <!--                  <th>Name</th>-->
-              <!--                  <th>Last Name</th>-->
-              <!--                  <th>Age</th>-->
-              <!--                  <th>E-mail</th>-->
-              <!--                  <th>Password</th>-->
-              <!--                  <th>Role</th>-->
-              <!--                </tr>-->
-              <!--                </thead>-->
-              <!--                <tbody>-->
-              <!--                <tr>-->
-              <!--                  <td th:text = "${thisUser.id}">1</td>-->
-              <!--                  <td th:text = "${thisUser.firstName}">User</td>-->
-              <!--                  <td th:text = "${thisUser.lastName}">Lastname</td>-->
-              <!--                  <td th:text = "${thisUser.age}">Age</td>-->
-              <!--                  <td th:text = "${thisUser.email}">user@mail.com</td>-->
-              <!--                  <td th:text = "${thisUser.password}">user</td>-->
-              <!--                  <td th:text = "${thisUser.printAuthoritiesToString()}">USER</td>-->
-              <!--                </tr>-->
-              <!--                </tbody>-->
-              <!--              </table>-->
             </div>
           </div>
         </div>
