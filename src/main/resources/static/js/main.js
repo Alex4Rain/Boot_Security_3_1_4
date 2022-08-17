@@ -1,16 +1,25 @@
 
 // 1. Required data to start
-const requestURL = "http://localhost:8080/rest";
+const requestURL = ["http://localhost:8080/api/currentUser", "http://localhost:8080/api/users", "http://localhost:8080/api/roles", "http://localhost:8080/api/admin/user"];
 const tableColumnsName = ["ID", "Name", "Last Name", "Age", "E-mail", "Password", "Roles"];
 const tableColumnsNameExtension = ["ID", "Name", "Last Name", "Age", "E-mail", "Password", "Roles", "Edit", "Delete"];
 const userBody = {
-    id: "",
+    id: null,
     firstName: "",
     lastName: "",
-    email: "",
     age: "",
+    email: "",
     password: "",
-    roles: ""
+    authorities: [{
+        id: null,
+        name: "",
+        users: null,
+        authority: ""}],
+    enabled: true,
+    username: "",
+    accountNonLocked: true,
+    accountNonExpired: true,
+    credentialsNonExpired: true
 };
 
 // 2. Function to get/send data from server
@@ -54,6 +63,21 @@ function rolesSetToString(rolesArray) {
     return array.join("; ")
 }
 
+function rolesStringToSet(rolesString) {
+    let nameArray = rolesString.split("; ");
+    let rolesArray = [];
+    for (let name of nameArray) {
+        if (name != null)
+            rolesArray.push({
+                id: null,
+                name: name,
+                users: null,
+                authority: name
+            });
+    }
+    return rolesArray;
+}
+
 function userToArray(user) {
     let array = [];
     array.push(user.id);
@@ -76,23 +100,27 @@ function getUserMultiArray(userArray) {
 
 function getLoggedUserFromResponse(response) {
     const loggedUserArray = [];
-    loggedUserArray.push(userToArray(response.loggedUser));
+    loggedUserArray.push(userToArray(response));
     return loggedUserArray;
 }
 
 function getUsersFromResponse(response) {
-    if (response.usersFromDb === null) {
+    if (response === null) {
         return [[]];
     } else {
-        return getUserMultiArray(response.usersFromDb);
+        return getUserMultiArray(response);
     }
 }
 
 function getRolesFromResponse(response) {
-    if (response.roleSet === null) {
-        return [""];
+    if (response === null) {
+        return [{
+            id: null,
+            name: "",
+            users: null,
+            authority: ""}];
     } else {
-        return response.roleSet;
+        return response;
     }
 }
 
@@ -162,8 +190,8 @@ function putRolesInSelect(response, ident) {
     let select = document.getElementById(ident + "_rolesSelect")
     for (let role of rolesSet) {
         let option = document.createElement("option");
-        option.textContent = role;
-        option.value = role;
+        option.textContent = role.name;
+        option.value = role.name;
         select.appendChild(option);
     }
     return response;
@@ -174,7 +202,7 @@ function doSubmitForm() {
     buttonNew.addEventListener("click", submitNewUser);
     let buttonEdit = document.getElementById("editUser_submit");
     buttonEdit.addEventListener("click", () => {new Promise(submitEditUser)
-                                                        .then(() => document.getElementById("editUser_close").click())});
+        .then(() => document.getElementById("editUser_close").click())});
     let buttonDelete = document.getElementById("deleteUser_submit");
 
     buttonDelete.addEventListener("click", () => new Promise(submitDeleteUser).then(data => document.getElementById("deleteUser_close").click()));
@@ -216,8 +244,8 @@ function getUserFromTable(userBody, rowNumber) {
     userBody.email = row.cells.item(4).innerHTML;
     userBody.password = row.cells.item(5).innerHTML;
     userBody.id = row.cells.item(0).innerHTML;
-    userBody.roles = row.cells.item(6).innerHTML;
-
+    userBody.username = userBody.email;
+    userBody.authorities = rolesStringToSet(row.cells.item(6).innerHTML);
     return userBody;
 }
 
@@ -233,23 +261,28 @@ function putValueInBody(userBody, ident) {
     document.getElementById(ident + "_email").value = "";
     userBody.password = document.getElementById(ident + "_password").value;
     document.getElementById(ident + "_password").value = "";
-    if (ident === "editUser") {
+    userBody.username = userBody.email;
+    if (ident !== "newUser") {
         userBody.id = document.getElementById(ident + "_id").value;
-    } else {
-        userBody.id = 0;
+        document.getElementById(ident + "_id").value = "";
     }
     if (ident === "deleteUser") {
-        rolesArray = [];
-        rolesArray = [];
+        rolesArray = rolesStringToSet(document.getElementById(ident + "_id").value);
     } else {
         for (let option of document.getElementById(ident + "_rolesSelect").options) {
             if (option.selected) {
-                rolesArray.push(option.value);
+                let role = {
+                    id: null,
+                    name: option.value,
+                    users: null,
+                    authority: option.value
+                }
+                rolesArray.push(role);
                 option.selected = false;
             }
         }
     }
-    userBody.roles = rolesArray.join(";");
+    userBody.authorities = rolesArray;
 }
 
 function putUserInInput(userBody, ident) {
@@ -260,27 +293,38 @@ function putUserInInput(userBody, ident) {
     document.getElementById(ident + "_password").value = userBody.password;
     document.getElementById(ident + "_id").value = userBody.id;
     if (ident === "deleteUser") {
-        document.getElementById(ident + "_roles").value = userBody.roles;
+        document.getElementById(ident + "_roles").value = rolesSetToString(userBody.authorities);
     }
     clearValuesInBody(userBody);
 }
 
 function clearValuesInBody(userBody) {
-    userBody.firstName = "";
-    userBody.lastName = "";
-    userBody.age = "";
-    userBody.email = "";
-    userBody.roles = "";
-    userBody.password = "";
-    userBody.id = "";
-
+    userBody = {
+        id: null,
+        firstName: "",
+        lastName: "",
+        age: "",
+        email: "",
+        password: "",
+        authorities: [{
+            id: null,
+            name: "",
+            users: null,
+            authority: ""}],
+        enabled: true,
+        username: "",
+        accountNonLocked: true,
+        accountNonExpired: true,
+        credentialsNonExpired: true
+    };
 }
 
 // 6. Functions to submit data to server
 
 function submitNewUser() {
     putValueInBody(userBody, "newUser");
-    sendRequest("POST", requestURL, userBody)
+//    console.log(userBody);
+    sendRequest("POST", requestURL[3], userBody)
         .then(data => createTableFromResponse(data, getUsersFromResponse, tableColumnsNameExtension, "usersFromDb"))
         .then(data => document.getElementById("userTableSwitch").click())
         .catch(err => console.log(err));
@@ -289,7 +333,7 @@ function submitNewUser() {
 
 function submitEditUser() {
     putValueInBody(userBody, "editUser");
-    sendRequest("PATCH", requestURL, userBody)
+    sendRequest("PATCH", requestURL[3], userBody)
         .then(data => createTableFromResponse(data, getUsersFromResponse, tableColumnsNameExtension, "usersFromDb"))
         .catch(err => console.log(err));
     clearValuesInBody(userBody);
@@ -297,7 +341,7 @@ function submitEditUser() {
 
 function submitDeleteUser() {
     putValueInBody(userBody, "deleteUser");
-    sendRequest("DELETE", requestURL, userBody)
+    sendRequest("DELETE", requestURL[3], userBody)
         .then(data => createTableFromResponse(data, getUsersFromResponse, tableColumnsNameExtension, "usersFromDb"))
         .catch(err => console.log(err));
     clearValuesInBody(userBody);
@@ -328,12 +372,18 @@ document.getElementById("newUserSwitch").onclick = function () {
     return navSwitch("newUserSwitch", "addUser", "userTableSwitch", "showUsers");
 }
 
-sendRequest("GET",requestURL)
+sendRequest("GET",requestURL[0])
     .then(data => createTableFromResponse(data, getLoggedUserFromResponse, tableColumnsName, "loggedUser"))
+    .then(data => putUserNameInNavbar(data))
+    .catch(err => console.log(err));
+
+sendRequest("GET",requestURL[1])
     .then(data => createTableFromResponse(data, getUsersFromResponse, tableColumnsNameExtension, "usersFromDb"))
+    .catch(err => console.log(err));
+
+sendRequest("GET",requestURL[2])
     .then(data => putRolesInSelect(data, "newUser"))
     .then(data => putRolesInSelect(data, "editUser"))
-    .then(data => putUserNameInNavbar(data))
     .catch(err => console.log(err));
 
 doSubmitForm();

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,12 +19,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final SuccessUserHandler successUserHandler;
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    public WebSecurityConfig(@Qualifier("UserDetailServiceImpl") UserDetailsService userDetailsService, SuccessUserHandler successUserHandler) {
-        this.successUserHandler = successUserHandler;
+    public WebSecurityConfig(@Qualifier("UserDetailServiceImpl") UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -35,17 +32,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).authenticated()
-                .antMatchers("/").authenticated()
-                .antMatchers(HttpMethod.GET,"/rest", "/index").authenticated()
-                .antMatchers(HttpMethod.POST,"/rest", "/index").hasRole("ADMIN")
-                .antMatchers(HttpMethod.PATCH,"/rest", "/index").hasRole("ADMIN")
-                .antMatchers(HttpMethod.DELETE,"/rest", "/index").hasRole("ADMIN")
+                .antMatchers("/", "/api/currentUser", "/api/users", "/api/roles").authenticated()
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .antMatchers("/auth/logout").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .loginPage("/")
-                .successHandler(successUserHandler)
                 .permitAll()
                 .and()
                 .logout()
@@ -53,7 +45,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("/login")
                 .permitAll();
 
     }
